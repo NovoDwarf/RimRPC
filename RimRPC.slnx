@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Release" />
+  </Configurations>
+  <Folder Name="/Sources/">
+    <Project Path="Sources/RimRPC.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/RimRPC.Tests.csproj" />
+  </Folder>
+</Solution>
