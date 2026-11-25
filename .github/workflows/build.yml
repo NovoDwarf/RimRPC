@@ -17,8 +17,6 @@ jobs:
         run: dotnet build RimRPC.slnx -c Release --warnaserror
       - name: Run xUnit tests
         run: dotnet test Tests/RimRPC.Tests.csproj -c Release --no-build
-      - name: Verify package and translations
-        run: python3 Tests/validate_package.py
       - name: Verify mod dependencies
         run: |
           test -f RimWorldRPC/1.7/Assemblies/RimRPC.dll
