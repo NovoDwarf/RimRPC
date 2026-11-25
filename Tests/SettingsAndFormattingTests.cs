@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Text;
-using RimRPC.Core;
+using RimRPC.RPC;
 using Verse;
 using RimRPC.Utilities;
 using Xunit;
@@ -52,23 +52,6 @@ public sealed class SettingsAndFormattingTests
         Assert.Equal(20f, settings.RpcPeriod);
     }
 
-    [Fact]
-    public void LegacySettingsMigrateAndNewFieldsKeepDefaults()
-    {
-        Scribe_Values.Values.Clear(); Scribe.mode = LoadSaveMode.LoadingVars;
-        Scribe_Values.Values["RPC_Period"] = 3000f;
-        Scribe_Values.Values["RPC_CustomBottom"] = true;
-        Scribe_Values.Values["RPC_CustomBottomText"] = "Bottom";
-        var settings = new RimRpcSettings(); settings.ExposeData();
-        Assert.Equal(50f, settings.RpcPeriod);
-        Assert.True(settings.RpcEnabled);
-        Assert.Equal("logo", settings.RpcLargeImageKey);
-        Assert.Equal("", settings.RpcApplicationId);
-        Assert.True(settings.RpcCustomBottom); Assert.False(settings.RpcCustomTop);
-        Assert.Equal("Bottom", settings.RpcCustomBottomText);
-        Scribe.mode = LoadSaveMode.Inactive;
-    }
-
     [Theory]
     [InlineData(1, 5)]
     [InlineData(999, 120)]
@@ -80,24 +63,24 @@ public sealed class SettingsAndFormattingTests
     }
 
     [Fact]
-    public void LegacyZeroIsRepairedAndMissingPeriodUsesLegacyDefault()
+    public void MissingPeriodUsesDefault()
     {
-        Scribe_Values.Values.Clear(); Scribe.mode = LoadSaveMode.LoadingVars;
-        var missing = new RimRpcSettings(); missing.ExposeData();
-        Assert.InRange(missing.RpcPeriod, 20.8f, 20.9f);
-        Scribe_Values.Values["RPC_Period"] = 0f;
-        var zero = new RimRpcSettings(); zero.ExposeData();
-        Assert.Equal(20, zero.RpcPeriod);
+        Scribe_Values.Values.Clear();
+        Scribe.mode = LoadSaveMode.LoadingVars;
+        var settings = new RimRpcSettings();
+
+        settings.ExposeData();
+
+        Assert.Equal(RimRpcSettings.DefaultPeriod, settings.RpcPeriod);
         Scribe.mode = LoadSaveMode.Inactive;
     }
 
     [Fact]
-    public void NewSettingsRoundTripWithoutLegacyPeriodOverridingThem()
+    public void SettingsRoundTrip()
     {
         Scribe_Values.Values.Clear(); Scribe.mode = LoadSaveMode.Saving;
         var settings = new RimRpcSettings { RpcPeriod = 45, RpcEnabled = false, RpcApplicationId = "123", RpcLargeImageKey = "custom" };
         settings.ExposeData();
-        Scribe_Values.Values["RPC_Period"] = 6000f;
         Scribe.mode = LoadSaveMode.LoadingVars;
         var loaded = new RimRpcSettings(); loaded.ExposeData();
         Assert.Equal(45, loaded.RpcPeriod); Assert.False(loaded.RpcEnabled);
@@ -108,27 +91,26 @@ public sealed class SettingsAndFormattingTests
     [Fact]
     public void ResetKeepsSettingsObjectAndRestoresEveryField()
     {
-        var settings = new RwrpcSettings { RpcEnabled = false, RpcApplicationId = "123", RpcLargeImageKey = "custom", RpcPeriod = 99, RpcCustomBottom = true };
+        var settings = new RimRpcSettings { RpcEnabled = false, RpcApplicationId = "123", RpcLargeImageKey = "custom", RpcPeriod = 99, RpcCustomBottom = true };
         settings.ResetToDefaults();
         var defaults = new RimRpcSettings();
         foreach (var field in typeof(RimRpcSettings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
             Assert.Equal(field.GetValue(defaults), field.GetValue(settings));
-        Assert.IsType<RwrpcSettings>(settings);
     }
 
     [Fact]
     public void HourIsIndependentAndUnknownLocationOmitsLocalFields()
     {
-        RimWorldRPCMod.Settings = new RimRpcSettings { RpcDay = false, RpcQuadrum = false };
+        RimRpc.Settings = new RimRpcSettings { RpcDay = false, RpcQuadrum = false };
         Assert.Equal("12RPC_Hour", States.GetState(Colony));
-        RimWorldRPCMod.Settings.RpcQuadrum = true;
+        RimRpc.Settings.RpcQuadrum = true;
         Assert.Equal("", States.GetState(Colony with { HasLocalTime = false }));
     }
 
     [Fact]
     public void TypedFieldsProduceCorrectSeparators()
     {
-        RimWorldRPCMod.Settings = new RimRpcSettings { RpcDay = false, RpcHour = false, RpcQuadrum = false, RpcYear = true, RpcBiome = true, RpcColonistCount = true };
+        RimRpc.Settings = new RimRpcSettings { RpcDay = false, RpcHour = false, RpcQuadrum = false, RpcYear = true, RpcBiome = true, RpcColonistCount = true };
         Assert.Equal("5502RPC_ShortYears | Forest", States.GetState(Colony));
         Assert.Equal("Colony (3)", Details.GetDetails(Colony));
     }
@@ -137,7 +119,7 @@ public sealed class SettingsAndFormattingTests
     [InlineData("Ж", 200)]
     [InlineData("🐱", 100)]
     [InlineData("a", 500)]
-    public void PreviewAndTransportShareUtf8Truncation(string symbol, int repeat)
+    public void PresenceTextUsesUtf8Truncation(string symbol, int repeat)
     {
         var value = string.Concat(Enumerable.Repeat(symbol, repeat));
         var payload = new RpcPayload { Details = value, State = value, LargeImageKey = " custom " }.Normalize();
@@ -147,10 +129,28 @@ public sealed class SettingsAndFormattingTests
         Assert.False(char.IsHighSurrogate(payload.Details[^1]));
     }
 
+    [Theory]
+    [InlineData(false, false, null)]
+    [InlineData(true, false, "Colony")]
+    [InlineData(false, true, "3 RPC_Colonists")]
+    [InlineData(true, true, "Colony (3)")]
+    public void DetailsRespectColonyAndColonistSettings(bool showColony, bool showColonists, string expected)
+    {
+        RimRpc.Settings = new RimRpcSettings
+        {
+            RpcColony = showColony,
+            RpcColonistCount = showColonists
+        };
+
+        var result = Details.GetDetails(Colony);
+
+        Assert.Equal(expected, result);
+    }
+
     [Fact]
     public void CustomTextOverridesFieldsAndWhitespaceIsCleared()
     {
-        RimWorldRPCMod.Settings = new RimRpcSettings { RpcCustomTop = true, RpcCustomTopText = "Top", RpcCustomBottom = true, RpcCustomBottomText = " " };
+        RimRpc.Settings = new RimRpcSettings { RpcCustomTop = true, RpcCustomTopText = "Top", RpcCustomBottom = true, RpcCustomBottomText = " " };
         Assert.Equal("Top", Details.GetDetails(Colony));
         Assert.Null(new RpcPayload { State = States.GetState(Colony) }.Normalize().State);
     }

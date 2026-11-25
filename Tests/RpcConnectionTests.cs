@@ -1,4 +1,4 @@
-using RimRPC.Core;
+using RimRPC.RPC;
 using Xunit;
 
 namespace RimRPC.Tests;

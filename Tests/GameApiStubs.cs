@@ -6,7 +6,7 @@ using Xunit;
 
 namespace RimRPC
 {
-    internal static class RimWorldRPCMod
+    internal static class RimRpc
     {
         public static RimRpcSettings Settings = new();
     }

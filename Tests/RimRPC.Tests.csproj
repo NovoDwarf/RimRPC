@@ -12,6 +12,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="../Sources/Core/*.cs;../Sources/Utilities/*.cs;../Sources/RimRpcSettings.cs;../Sources/RwrpcSettings.cs" LinkBase="Production" />
+    <Compile Include="../Sources/RPC/RpcConnection.cs;../Sources/RPC/RpcConnectionState.cs;../Sources/RPC/RpcData.cs;../Sources/RPC/RpcIdentity.cs;../Sources/RPC/RpcPayload.cs;../Sources/RPC/RpcText.cs;../Sources/Utilities/*.cs;../Sources/RimRpcSettings.cs" LinkBase="Production" />
   </ItemGroup>
 </Project>
