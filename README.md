@@ -34,12 +34,12 @@ Debug builds use `Sources/bin/Debug/`.
 
 The status updates on entering a game, changing the active map, returning to
 menu, and at a configurable interval of 5–120 real seconds (including while
-paused). The default is 20 seconds; old tick-based intervals migrate to seconds. Use **Update** in mod settings to apply text changes
+paused). The default is 20 seconds. Use **Update** in mod settings to apply text changes
 immediately. The Discord connection retries when the desktop client is unavailable.
 
 The updater subscribes directly to Waylith's application update and shutdown
 hooks, so it does not require a Unity GameObject or physics callback.
-Existing released settings keep their original mod handle and serialized type name.
+Settings from older releases are not migrated.
 
 ## Credits
 
