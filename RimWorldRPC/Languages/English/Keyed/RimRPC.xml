@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LanguageData>
+    <RPC_CategoryLabel>RimRPC</RPC_CategoryLabel>
+    <RPC_ColonyLabel>Colony name</RPC_ColonyLabel>
+    <RPC_ColonistCountLabel>Colonist count</RPC_ColonistCountLabel>
+    <RPC_BiomeLabel>Current biome</RPC_BiomeLabel>
+    <RPC_YearLabel>Current year</RPC_YearLabel>
+    <RPC_YearShortLabel>Shorten year text</RPC_YearShortLabel>
+    <RPC_QuadrumLabel>Current quadrum</RPC_QuadrumLabel>
+    <RPC_DayLabel>Current day</RPC_DayLabel>
+    <RPC_HourLabel>Hour of current day</RPC_HourLabel>
+    <RPC_TimeLabel>Game session length</RPC_TimeLabel>
+    <RPC_UpdateLabel>Manually update presence</RPC_UpdateLabel>
+    <CustomTopCheckbox>Custom text (Top)</CustomTopCheckbox>
+    <CustomBottomCheckbox>Custom text (Bottom)</CustomBottomCheckbox>
+    <CustomTopLabel>Text</CustomTopLabel>
+    <CustomBottomLabel>Text </CustomBottomLabel>
+    <RPC_MainMenu>Main Menu</RPC_MainMenu>
+    <RPC_Day>Day</RPC_Day>
+    <RPC_Colonists>Colonists</RPC_Colonists>
+    <RPC_Hour>h</RPC_Hour>
+    <RPC_Years>Year</RPC_Years>
+    <RPC_ShortYears>y</RPC_ShortYears>
+    <RPC_Playing>Playing!</RPC_Playing>
+    <RPC_Period>Update interval:</RPC_Period>
+    <RPC_Seconds>seconds</RPC_Seconds>
+    <RPC_Connected>Discord: connected</RPC_Connected>
+    <RPC_Disconnected>Discord: waiting for desktop client</RPC_Disconnected>
+    <RPC_ApplicationIdLabel>Discord Application ID (optional)</RPC_ApplicationIdLabel>
+    <RPC_ApplicationIdHint>Leave empty for the default application. Apply using the connection button. Invalid input does not affect text updates.</RPC_ApplicationIdHint>
+    <RPC_ApplicationIdInvalid>Application ID must be a positive numeric ID.</RPC_ApplicationIdInvalid>
+    <RPC_ApplicationIdFailed>Could not reconnect. Check the log and try again.</RPC_ApplicationIdFailed>
+    <RPC_State_Disabled>Discord: disabled</RPC_State_Disabled>
+    <RPC_State_Connecting>Discord: connecting…</RPC_State_Connecting>
+    <RPC_State_Connected>Discord: connected</RPC_State_Connected>
+    <RPC_State_Error>Discord: connection error; retry scheduled</RPC_State_Error>
+    <RPC_ConnectionError>Reason:</RPC_ConnectionError>
+    <RPC_EnabledLabel>Enable Discord Rich Presence</RPC_EnabledLabel>
+    <RPC_ApplyConnection>Apply connection / Retry now</RPC_ApplyConnection>
+    <RPC_LargeImageKey>Large image asset key (empty to hide)</RPC_LargeImageKey>
+    <RPC_SmallImageKey>Small image asset key (empty to hide)</RPC_SmallImageKey>
+    <RPC_Preview>Presence text preview</RPC_Preview>
+    <RPC_EmptyLine>(empty)</RPC_EmptyLine>
+    <RPC_PreviewHint>Preview includes the 128-byte UTF-8 limit. Images and connection availability are not shown here.</RPC_PreviewHint>
+    <RPC_Reset>Reset all settings to defaults</RPC_Reset>
+</LanguageData>

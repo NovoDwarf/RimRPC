@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>RimRPC - RichPresence</name>
+  <author>Weilbyte</author>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <description>Discord Rich Presence for RimWorld 1.7 (unstable).</description>
+  <url>https://github.com/NovoDwarf/RimWorldRPC</url>
+  <packageId>weilbyte.rimrpc</packageId>
+</ModMetaData>

@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LanguageData>
+    <RPC_CategoryLabel>RimRPC</RPC_CategoryLabel>
+    <RPC_ColonyLabel>Отображение названия колонии</RPC_ColonyLabel>
+    <RPC_ColonistCountLabel>Отображение количества колонистов</RPC_ColonistCountLabel>
+    <RPC_BiomeLabel>Отображение биома</RPC_BiomeLabel>
+    <RPC_YearLabel>Отображение года</RPC_YearLabel>
+    <RPC_YearShortLabel>Сокращать отображение года</RPC_YearShortLabel>
+    <RPC_QuadrumLabel>Отображение квадрума</RPC_QuadrumLabel>
+    <RPC_DayLabel>Отображение дня</RPC_DayLabel>
+    <RPC_HourLabel>Отображение часа</RPC_HourLabel>
+    <RPC_TimeLabel>Длина игровой сессии</RPC_TimeLabel>
+    <RPC_UpdateLabel>Принудительное обновление RPC</RPC_UpdateLabel>
+    <CustomTopCheckbox>Произвольный текст (верх)</CustomTopCheckbox>
+    <CustomBottomCheckbox>Произвольный текст (низ)</CustomBottomCheckbox>
+    <CustomTopLabel>Текст</CustomTopLabel>
+    <CustomBottomLabel>Текст</CustomBottomLabel>
+    <RPC_MainMenu>В главном меню</RPC_MainMenu>
+    <RPC_Day>День</RPC_Day>
+    <RPC_Biome>Биом</RPC_Biome>
+    <RPC_Colonists>колонистов</RPC_Colonists>
+    <RPC_Hour>ч</RPC_Hour>
+    <RPC_Years>Год</RPC_Years>
+    <RPC_ShortYears>г</RPC_ShortYears>
+    <RPC_Playing>Играю!</RPC_Playing>
+    <RPC_Period>Интервал обновления:</RPC_Period>
+    <RPC_Seconds>сек.</RPC_Seconds>
+    <RPC_Connected>Discord: подключён</RPC_Connected>
+    <RPC_Disconnected>Discord: ожидание настольного клиента</RPC_Disconnected>
+    <RPC_ApplicationIdLabel>Discord Application ID (необязательно)</RPC_ApplicationIdLabel>
+    <RPC_ApplicationIdHint>Пустое поле — стандартное приложение. Применяйте отдельной кнопкой подключения. Неверный ID не мешает обновлению текста.</RPC_ApplicationIdHint>
+    <RPC_ApplicationIdInvalid>Application ID должен быть положительным числовым идентификатором.</RPC_ApplicationIdInvalid>
+    <RPC_ApplicationIdFailed>Не удалось переподключиться. Проверьте журнал и повторите попытку.</RPC_ApplicationIdFailed>
+    <RPC_State_Disabled>Discord: отключён</RPC_State_Disabled>
+    <RPC_State_Connecting>Discord: подключение…</RPC_State_Connecting>
+    <RPC_State_Connected>Discord: подключён</RPC_State_Connected>
+    <RPC_State_Error>Discord: ошибка подключения; запланирована повторная попытка</RPC_State_Error>
+    <RPC_ConnectionError>Причина:</RPC_ConnectionError>
+    <RPC_EnabledLabel>Включить Discord Rich Presence</RPC_EnabledLabel>
+    <RPC_ApplyConnection>Применить подключение / Повторить сейчас</RPC_ApplyConnection>
+    <RPC_LargeImageKey>Ключ большого изображения (пусто — скрыть)</RPC_LargeImageKey>
+    <RPC_SmallImageKey>Ключ малого изображения (пусто — скрыть)</RPC_SmallImageKey>
+    <RPC_Preview>Предпросмотр текста статуса</RPC_Preview>
+    <RPC_EmptyLine>(пусто)</RPC_EmptyLine>
+    <RPC_PreviewHint>Предпросмотр учитывает ограничение 128 байт UTF-8. Изображения и доступность подключения здесь не проверяются.</RPC_PreviewHint>
+    <RPC_Reset>Сбросить все настройки</RPC_Reset>
+</LanguageData>
