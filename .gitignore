@@ -355,3 +355,11 @@ MigrationBackup/
 # Rimworld Libraries 
 Assembly-CSharp.dll
 UnityEngine.CoreModule.dll
+# macOS and Rider local state
+.DS_Store
+._*
+.idea/
+
+# Rebuilt RimWorld 1.7 mod assemblies and release archives
+/RimWorldRPC/1.7/Assemblies/
+/RWRichPresence.zip

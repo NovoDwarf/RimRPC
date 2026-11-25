@@ -1,53 +1,85 @@
+# RimWorldRPC
 
-<p align="center">
-<img src="https://i.imgur.com/ruELjgO.png">
-</p>
+Discord Rich Presence for **RimWorld 1.7 (unstable)** and .NET 10.
+This branch targets reference assemblies for **1.7.5014-unstable**.
+Earlier game versions require an earlier mod release.
 
-# RWRichPresence
-RWRichPresence updates your Discord status with some information about your game. Now updated for the latest version of the game - 1.3!
-
-## Feautures
-
-* Display various game information 
-* Customizable text 
-* Plenty of settings, so you can enable and disable certain aspects!
-
-*Currently shows:*
-* Colony name
-* Amount of days colony has lasted
-* Hour of the current day
-* Quadrum
-* Amount of time your game has been running for
-* Year
+Shows the colony name, colonist count, days survived, hour, quadrum, calendar year,
+biome, and elapsed session time. Configure each field or enter custom top
+and bottom text in the mod settings.
 
 ## Installation
-*Skip to step 3 if you have the mod from Steam Workshop*
 
-1. Download the latest release [(link)](https://github.com/Weilbyte/RWRichPresence/releases)
-2. Extract the `RimRPC` folder from the zip to your RimWorld Mod folder as per usual.
-3. Go to Discord's `discord-rpc` release page. [(link)](https://github.com/discordapp/discord-rpc/releases)
-4. Download `discord-rpc-win.zip` for windows or `discord-rpc-linux.zip` if you are using linux.
-5. Open the zip and follow instructions below depending on your PC architecture and platform:  
-  * *(Windows 32 bit)*  Copy  `discord-rpc\win32-dynamic\bin\discord-rpc.dll` into your RimWorld folder - `RimWorld\MonoBleedingEdge\EmbedRuntime`  
-  * *(Windows 64 bit)* Copy `discord-rpc\win64-dynamic\bin\discord-rpc.dll` into your RimWorld folder - `RimWorld\MonoBleedingEdge\EmbedRuntime` or for 1.1 `Rimworld\RimWorldWin64_Data\Plugins`
-  * *(Linux 64 bit)* Copy `discord-rpc\linux-dynamic\lib\discord-rpc.so` into your RimWorld folder - `RimWorld/MonoBleedingEdge/EmbedRuntime`
-6. Rename `discord-rpc.dll` to `0discord-rpc.dll`.
-  * On linux you will need to rename`discord-rpc.so` to `lib0discord-rpc.so` or `0discord-rpc`
+1. Download `RWRichPresence.zip` from a release of this fork.
+2. Extract the `RimWorldRPC` folder into RimWorld's `Mods` directory.
+3. Enable the mod and run the Discord desktop client with activity sharing enabled.
 
-Thats pretty much it, youre set. 
+The release includes `RimRPC.dll`, `DiscordRPC.dll`, and `Newtonsoft.Json.dll`.
+No native `0discord-rpc` library or Harmony mod is required.
 
-##  Usage
-Can be added and removed (spits out a single error that you can ignore) mid-game.  
-Once in-game, presence will update twice every **in-game** hour which equals to once every *20.5* **real-time** seconds.
+## Build
 
-There is a mod settings menu which you can use to tweak what is displayed. From there you can also set custom text (as shown in the image) to replace either the top or bottom line.
+Install the .NET 10 SDK, then run from the repository root:
 
+```sh
+dotnet build RimRPC.slnx -c Release
+```
 
-Make sure RimWorld is added as a game in Discord's settings.
+The complete mod is in `RimWorldRPC/`; generated assemblies go to
+`RimWorldRPC/1.7/Assemblies/` and are ignored by Git. Game reference assemblies
+are used only for compilation and are never shipped with the mod.
+Debug builds use `Sources/bin/Debug/`.
+
+## Usage
+
+The status updates on entering a game, changing the active map, returning to
+menu, and at a configurable interval of 5–120 real seconds (including while
+paused). The default is 20 seconds; old tick-based intervals migrate to seconds. Use **Update** in mod settings to apply text changes
+immediately. The Discord connection retries when the desktop client is unavailable.
+
+The updater subscribes directly to Waylith's application update and shutdown
+hooks, so it does not require a Unity GameObject or physics callback.
+Existing released settings keep their original mod handle and serialized type name.
 
 ## Credits
-Jdalt40
 
-## Links
+Original mod by [Weilbyte](https://github.com/Weilbyte/RWRichPresence), with
+contributions by Jdalt40. Discord IPC uses
+[Lachee's DiscordRichPresence](https://github.com/Lachee/discord-rpc-csharp).
 
-[Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=1463057070)
+[Original Steam Workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=1463057070)
+
+## Custom Discord application
+
+The optional Application ID setting uses the default application when blank.
+Enter your own numeric ID and press the connection Apply / Retry button to reconnect without
+restarting the game. Clear the field and apply to restore the default application.
+By default, custom applications use image asset keys `logo` and `inmap`.
+Change the large and small image keys in settings to match your application.
+
+## Connection and preview
+
+Connection settings have their own Apply / Retry button. The ID is kept as a
+draft until accepted by the format check; only Discord's Ready response marks
+it connected. Failures display their reason and retry automatically after
+5–60 seconds. You can disable RPC without restarting the game.
+
+The text preview uses exactly the same UTF-8 truncation as outgoing presence.
+Large and small image asset keys are configurable; empty keys hide the image.
+Reset restores all defaults, including the application ID and image keys.
+In world view the calendar uses the first home map's location. If no map or
+home map is available, local hour and quadrum are omitted.
+
+## Tests
+
+```sh
+dotnet test Tests/RimRPC.Tests.csproj -c Release
+python3 Tests/validate_package.py
+```
+
+The separate xUnit project links production connection, formatting, and settings
+logic. Settings serialization and translation use small API stubs because game
+reference assemblies contain no executable game code. Discord reconnection, runtime
+hooks, and UI still require testing inside RimWorld 1.7.
+CI builds the solution, runs xUnit, and validates mod layout and translations.
+Steam publishing remains manual.
