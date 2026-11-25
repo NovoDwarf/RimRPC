@@ -1,40 +1,42 @@
 using System;
 using DiscordRPC;
+using DiscordRPC.Message;
 
-namespace RimRPC.Core;
-
-internal enum RpcConnectionState
-{
-    Disabled,
-    Connecting,
-    Connected,
-    Error
-}
+namespace RimRPC.RPC;
 
 internal sealed class RpcConnection
 {
-    private DiscordRpcClient _client;
-    private RpcPayload _presence;
-    private string _applicationId;
-    private bool _enabled;
-    private double _now;
-    private double _retryAt;
-    private double _attemptStarted;
-    private int _failures;
     public RpcConnectionState State { get; private set; } = RpcConnectionState.Disabled;
     public string LastError { get; private set; }
 
+    private DiscordRpcClient _client;
+    private RpcPayload _presence;
+    
+    private string _applicationId;
+    private bool _enabled;
+    
+    private double _now;
+    private double _retryAt;
+    private double _attemptStarted;
+    
+    private int _failures;
+    
     public void Configure(bool enabled, string applicationId, double now, bool force = false)
     {
         _now = now;
+        
         if (!force && _enabled == enabled && _applicationId == applicationId)
             return;
+        
         Close();
+       
         _enabled = enabled;
         _applicationId = applicationId;
         _failures = 0;
+       
         LastError = null;
         State = RpcConnectionState.Disabled;
+       
         if (enabled)
             Connect();
     }
@@ -42,17 +44,21 @@ internal sealed class RpcConnection
     public void Tick(double now)
     {
         _now = now;
+
         if (!_enabled)
             return;
+
         if (_client == null)
         {
             if (now >= _retryAt)
                 Connect();
+
             return;
         }
         try
         {
             _client.Invoke();
+           
             if (State == RpcConnectionState.Connecting && now - _attemptStarted >= 30)
                 Fail("Discord did not confirm the connection within 30 seconds.");
         }
@@ -65,8 +71,10 @@ internal sealed class RpcConnection
     public void Publish(RpcPayload presence)
     {
         _presence = presence.Normalize();
+     
         if (State != RpcConnectionState.Connected)
             return;
+
         try
         {
             _client.SetPresence(ToRichPresence(_presence));
@@ -80,7 +88,9 @@ internal sealed class RpcConnection
     public void Stop()
     {
         _enabled = false;
+
         Close();
+
         State = RpcConnectionState.Disabled;
         LastError = null;
     }
@@ -89,6 +99,7 @@ internal sealed class RpcConnection
     {
         Details = presence.Details,
         State = presence.State,
+        
         Assets = new Assets
         {
             LargeImageKey = presence.LargeImageKey,
@@ -96,6 +107,7 @@ internal sealed class RpcConnection
             SmallImageKey = presence.SmallImageKey,
             SmallImageText = presence.SmallImageText
         },
+        
         Timestamps = presence.StartTimestamp == 0
             ? null
             : new Timestamps(DateTimeOffset.FromUnixTimeSeconds(presence.StartTimestamp).UtcDateTime)
@@ -104,36 +116,20 @@ internal sealed class RpcConnection
     private void Connect()
     {
         State = RpcConnectionState.Connecting;
+      
         _attemptStarted = _now;
+       
         try
         {
             var client = new DiscordRpcClient(_applicationId, autoEvents: false);
+           
             _client = client;
-            client.OnReady += (_, _) =>
-            {
-                if (_client != client || !_enabled)
-                    return;
-                State = RpcConnectionState.Connected;
-                LastError = null;
-                _failures = 0;
-                if (_presence != null)
-                    Publish(_presence);
-            };
-            client.OnClose += (_, message) =>
-            {
-                if (_client == client)
-                    Fail(message.Reason);
-            };
-            client.OnConnectionFailed += (_, _) =>
-            {
-                if (_client == client)
-                    Fail("Discord desktop client is unavailable.");
-            };
-            client.OnError += (_, message) =>
-            {
-                if (_client == client)
-                    Fail(message.Message);
-            };
+           
+            client.OnReady += OnReady;
+            client.OnClose += OnClose;
+            client.OnConnectionFailed += OnConnectionFailed;
+            client.OnError += OnError;
+
             if (!client.Initialize() && _client == client)
                 Fail("Could not initialize the Discord IPC client.");
         }
@@ -143,11 +139,45 @@ internal sealed class RpcConnection
         }
     }
 
+    private void OnReady(object sender, ReadyMessage message)
+    {
+        if (sender != _client || !_enabled)
+            return;
+
+        State = RpcConnectionState.Connected;
+        LastError = null;
+        
+        _failures = 0;
+
+        if (_presence != null)
+            Publish(_presence);
+    }
+
+    private void OnClose(object sender, CloseMessage message)
+    {
+        if (sender == _client)
+            Fail(message.Reason);
+    }
+
+    private void OnConnectionFailed(object sender, ConnectionFailedMessage message)
+    {
+        if (sender == _client)
+            Fail("Discord desktop client is unavailable.");
+    }
+
+    private void OnError(object sender, ErrorMessage message)
+    {
+        if (sender == _client)
+            Fail(message.Message);
+    }
+
     private void Fail(string error)
     {
         Close();
+       
         LastError = string.IsNullOrWhiteSpace(error) ? "Discord connection failed." : error;
         State = RpcConnectionState.Error;
+       
         _retryAt = _now + Math.Min(60, 5 * Math.Pow(2, Math.Min(_failures++, 4)));
     }
 

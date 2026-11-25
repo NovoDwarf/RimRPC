@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace RimRPC.Core;
+namespace RimRPC.RPC;
 
 internal static class RpcIdentity
 {

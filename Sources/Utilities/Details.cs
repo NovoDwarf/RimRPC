@@ -1,4 +1,5 @@
-using RimRPC.Core;
+using System.Globalization;
+using RimRPC.RPC;
 using Verse;
 
 namespace RimRPC.Utilities;
@@ -7,27 +8,17 @@ internal static class Details
 {
     public static string GetDetails(RpcData data)
     {
-        var colonyname = data.Colony;
-        var colonistnumber = data.Colonists.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var settings = RimRpc.Settings;
+     
+        if (settings.RpcCustomTop)
+            return settings.RpcCustomTopText;
 
-        if (RimWorldRPCMod.Settings.RpcCustomTop)
-            return RimWorldRPCMod.Settings.RpcCustomTopText;
+        if (!settings.RpcColonistCount)
+            return settings.RpcColony ? data.Colony : null;
 
-        if (RimWorldRPCMod.Settings.RpcColony)
-        {
-            if (RimWorldRPCMod.Settings.RpcColonistCount)
-            {
-                return colonyname + " (" + colonistnumber + ")";
-            }
-
-            return colonyname;
-        }
-
-        if (RimWorldRPCMod.Settings.RpcColonistCount)
-        {
-            return colonistnumber + " " + "RPC_Colonists".Translate();
-        }
-
-        return null;
+        var colonists = data.Colonists.ToString(CultureInfo.InvariantCulture);
+        return settings.RpcColony
+            ? $"{data.Colony} ({colonists})"
+            : colonists + " " + "RPC_Colonists".Translate();
     }
 }

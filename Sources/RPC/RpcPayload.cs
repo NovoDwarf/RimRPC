@@ -1,4 +1,4 @@
-namespace RimRPC.Core;
+namespace RimRPC.RPC;
 
 internal record RpcPayload
 {

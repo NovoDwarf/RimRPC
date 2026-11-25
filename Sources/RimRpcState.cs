@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using RimRPC.Core;
 using RimRPC.RPC;
 using RimRPC.Runtime;
 using Verse;
@@ -27,36 +26,35 @@ public class RimRpcState
 
         try
         {
-            _engine = EngineApplication.Instance ?? throw new InvalidOperationException("Waylith is not initialized.");
+            _engine = EngineApplication.Instance;
             _updater = new PresenceUpdater();
             _engine.OnUpdate += Update;
             _engine.OnShutdown += Shutdown;
+         
             if (!ApplyApplicationId())
-                DiscordRpcService.Configure(RimWorldRPCMod.Settings.RpcEnabled, ApplicationId);
+                RpcService.Configure(RimRpc.Settings.RpcEnabled, ApplicationId);
+           
             StateHandler.PushState();
         }
         catch (Exception exception)
         {
             Shutdown();
-            Log.Warning("RichPresence :: Could not start Discord integration: " + exception);
+            Log.Warning("[RimRPC] Could not start Discord integration: " + exception);
         }
-    }
-
-    internal static bool TryResolveApplicationId(string customId, out string id)
-    {
-        return RpcIdentity.TryResolve(customId, out id);
     }
 
     internal static bool ApplyApplicationId(bool force = false)
     {
-        if (!RimWorldRPCMod.Settings.RpcEnabled)
+        if (!RimRpc.Settings.RpcEnabled)
         {
-            DiscordRpcService.Configure(false, ApplicationId);
+            RpcService.Configure(false, ApplicationId);
             return true;
         }
-        if (!TryResolveApplicationId(RimWorldRPCMod.Settings.RpcApplicationId, out var id))
+      
+        if (!RpcIdentity.TryResolve(RimRpc.Settings.RpcApplicationId, out var id))
             return false;
-        DiscordRpcService.Configure(true, id, force);
+       
+        RpcService.Configure(true, id, force);
         return true;
     }
 
@@ -64,7 +62,8 @@ public class RimRpcState
     {
         var now = Clock.Elapsed.TotalSeconds;
 
-        DiscordRpcService.RunCallbacks();
+        RpcService.RunCallbacks();
+       
         if (now < _retryAfter)
             return;
 
@@ -75,11 +74,11 @@ public class RimRpcState
         catch (Exception exception)
         {
             _retryAfter = now + 5;
-            Log.Warning("RichPresence :: Could not update status; retrying in 5 seconds: " + exception);
+            Log.Warning("[RimRPC] Could not update status; retrying in 5 seconds: " + exception);
         }
     }
 
-    internal static void Shutdown()
+    private static void Shutdown()
     {
         if (_engine != null)
         {
@@ -91,6 +90,6 @@ public class RimRpcState
         _updater = null;
         _retryAfter = 0;
 
-        DiscordRpcService.Shutdown();
+        RpcService.Shutdown();
     }
 }

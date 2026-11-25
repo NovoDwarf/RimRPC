@@ -1,4 +1,4 @@
-namespace RimRPC.Core;
+namespace RimRPC.RPC;
 
 internal sealed record RpcData(
     string Colony,

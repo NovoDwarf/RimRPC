@@ -28,7 +28,7 @@ internal sealed class PresenceUpdater
         }
 
         var map = game.CurrentMap;
-        var period = RimWorldRPCMod.Settings.RpcPeriod;
+        var period = RimRpc.Settings.RpcPeriod;
 
         if (!_wasPlaying || game != _lastGame || map != _lastMap || period != _lastPeriod || elapsedSeconds >= _nextUpdate)
         {

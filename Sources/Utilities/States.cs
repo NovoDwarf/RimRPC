@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using RimRPC.Core;
+using RimRPC.RPC;
 using Verse;
 
 namespace RimRPC.Utilities;
@@ -8,7 +8,7 @@ internal static class States
 {
     public static string GetState(RpcData data)
     {
-        var settings = RimWorldRPCMod.Settings;
+        var settings = RimRpc.Settings;
 
         if (settings.RpcCustomBottom)
             return settings.RpcCustomBottomText;

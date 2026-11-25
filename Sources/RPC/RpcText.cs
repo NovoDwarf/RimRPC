@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace RimRPC.Core;
+namespace RimRPC.RPC;
 
 internal static class RpcText
 {

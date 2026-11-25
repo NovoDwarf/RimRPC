@@ -1,9 +1,10 @@
 using System;
+using System.Reflection;
 using Verse;
 
 namespace RimRPC;
 
-public class RimRpcSettings : ModSettings
+public sealed class RimRpcSettings : ModSettings
 {
     public const float DefaultPeriod = 20f;
     public const float MinimumPeriod = 5f;
@@ -37,13 +38,7 @@ public class RimRpcSettings : ModSettings
     {
         base.ExposeData();
 
-        Scribe_Values.Look(ref RpcPeriod, "RPC_UpdateIntervalSeconds", -1f);
-        if (Scribe.mode == LoadSaveMode.LoadingVars && RpcPeriod == -1f)
-        {
-            var legacyTicks = 1250f;
-            Scribe_Values.Look(ref legacyTicks, "RPC_Period", 1250f);
-            RpcPeriod = legacyTicks / 60f;
-        }
+        Scribe_Values.Look(ref RpcPeriod, "RPC_UpdateIntervalSeconds", DefaultPeriod);
         Normalize();
 
         Scribe_Values.Look(ref RpcEnabled, "RPC_Enabled", true);
@@ -68,7 +63,8 @@ public class RimRpcSettings : ModSettings
     public void ResetToDefaults()
     {
         var defaults = new RimRpcSettings();
-        foreach (var field in typeof(RimRpcSettings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+       
+        foreach (var field in typeof(RimRpcSettings).GetFields(BindingFlags.Public | BindingFlags.Instance))
             field.SetValue(this, field.GetValue(defaults));
     }
 
@@ -79,4 +75,3 @@ public class RimRpcSettings : ModSettings
             : Math.Clamp(RpcPeriod, MinimumPeriod, MaximumPeriod);
     }
 }
-
